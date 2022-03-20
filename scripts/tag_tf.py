@@ -24,30 +24,21 @@ class TagListener:
             listener = tf.TransformListener()
 
             rate = rospy.Rate(1.0)
-            for tag_no in range(15):
-                try:
-                    tag_name = f'/fiducial_{tag_no}'
-                    (trans, _) = listener.lookupTransform(tag_name, '/base', rospy.Time(0))
-                    exec("service_msg.tag" + str(tag_no) + "= trans")
-                except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-                    continue
-                rate.sleep()
+            timeout = 1
 
-            service_msg.tag0=[0,0,0]
-            service_msg.tag1=[0,0,0]
-            service_msg.tag2=[0,0,0]
-            service_msg.tag3=[0,0,0]
-            service_msg.tag4=[0,0,0]
-            service_msg.tag5=[0,0,0]
-            service_msg.tag6=[0,0,0]
-            service_msg.tag7=[0,0,0]
-            service_msg.tag8=[0,0,0]
-            service_msg.tag9=[0,0,0]
-            service_msg.tag10=[0,0,0]
-            service_msg.tag11=[0,0,0]
-            service_msg.tag12=[0,0,0]
-            service_msg.tag13=[0,0,0]
-            service_msg.tag14=[0,0,0]
+            for tag_no in range(15):
+                print(f'Looking for tag {tag_no}')
+                timeout_start = time.time()
+                while time.time() < timeout_start + timeout:
+                    try:
+                        tag_name = f'/fiducial_{tag_no}'
+                        (trans, _) = listener.lookupTransform(tag_name, '/base', rospy.Time())
+                        exec("service_msg.tag" + str(tag_no) + "= trans")
+
+                    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                        exec("service_msg.tag" + str(tag_no) + "= [0,0,0]")
+                        continue
+                    rate.sleep()
 
             service_response = service_proxy(service_msg)
             print(f"You received score {service_response.score}")
