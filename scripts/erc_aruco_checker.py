@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ROS node for checking the ArUco position during the competition
+# ROS node for checking the detected ArUco positions in the simulation
 
 import rospy
 import yaml
@@ -31,28 +31,45 @@ import roslib
 
 from erc_aruco_msg.srv import ErcArucoRequest, ErcArucoResponse, ErcAruco
 
-class ArUcoChecker:
-    def __init__(self,aruco_config: dict):
-        self.gt_config = aruco_config
+class ErcArUcoChecker:
+    def __init__(self):
         rospy.init_node("erc_aruco_checker",anonymous=True)
+        pkg_dir = roslib.packages.get_pkg_dir("erc_aruco_checker")
+        sim = rospy.get_param('~sim')
+        self.tolerance = rospy.get_param('~tolerance')
+
+        if sim:
+            rospy.loginfo("Running in simulation")
+            config_file = pkg_dir + "/config/sim_config.yaml"
+            with open(config_file, 'r') as file_yaml:
+                self.gt_config = yaml.safe_load(file_yaml)
+        else:
+            rospy.loginfo("Running in real")
+            config_file = pkg_dir + "/config/real_config.yaml"
+            with open(config_file, 'r') as file_yaml:
+                self.gt_config = yaml.safe_load(file_yaml)
+
+
         self.check_service = rospy.Service('erc_aruco_score',ErcAruco,self.handle_score)
         rospy.loginfo("Ready to score")
         rospy.spin()
 
     def handle_score(self,req):
-        #TODO: calculate score wrt to gt
-        a = np.array(req.tag0)
-        b = np.array(self.gt_config['tag0'])
-        dist = np.linalg.norm(a - b)
-        return 10.0
+        points = 0.0
+        for a in dir(req):
+            if a.startswith('tag'):
+                tag_name = "req." + a
+                user_position = np.array(eval(tag_name))
+                gt_position = np.array(self.gt_config[a])
+                print(user_position, gt_position)
+                dist = np.linalg.norm(user_position-gt_position)
+                if dist <= self.tolerance and self.gt_config[a] != [0,0,0]:
+                    points = points + 1.0
+
+        return points
 
 if __name__ == '__main__':
-    pkg_dir = roslib.packages.get_pkg_dir("erc_aruco_checker")
-    config_file = pkg_dir + "/config/real_config.yaml"
     try:
-        with open(config_file,'r') as file_yaml:
-            config = yaml.safe_load(file_yaml)
-
-        c = ArUcoChecker(aruco_config=config)
+        c = ErcArUcoChecker()
     except KeyboardInterrupt:
         print("end")

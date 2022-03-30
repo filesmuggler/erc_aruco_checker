@@ -36,15 +36,23 @@ class ArUcoChecker:
         self.gt_config = aruco_config
         rospy.init_node("erc_aruco_checker",anonymous=True)
         self.check_service = rospy.Service('erc_aruco_score',ErcAruco,self.handle_score)
+        self.tolerance = 0.05
         rospy.loginfo("Ready to score")
         rospy.spin()
 
     def handle_score(self,req):
-        #TODO: calculate score wrt to gt
-        a = np.array(req.tag0)
-        b = np.array(self.gt_config['tag0'])
-        dist = np.linalg.norm(a - b)
-        return 10.0
+        points = 0.0
+        for a in dir(req):
+            if a.startswith('tag'):
+                tag_name = "req." + a
+                user_position = np.array(eval(tag_name))
+                gt_position = np.array(self.gt_config[a])
+                print(user_position, gt_position)
+                dist = np.linalg.norm(user_position-gt_position)
+                if dist <= self.tolerance and self.gt_config[a] != [0,0,0]:
+                    points = points + 1.0
+
+        return points
 
 if __name__ == '__main__':
     pkg_dir = roslib.packages.get_pkg_dir("erc_aruco_checker")
