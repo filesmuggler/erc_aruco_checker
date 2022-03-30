@@ -49,7 +49,6 @@ class ErcArUcoChecker:
             with open(config_file, 'r') as file_yaml:
                 self.gt_config = yaml.safe_load(file_yaml)
 
-
         self.check_service = rospy.Service('erc_aruco_score',ErcAruco,self.handle_score)
         rospy.loginfo("Ready to score")
         rospy.spin()
