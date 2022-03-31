@@ -18,8 +18,8 @@ You should call the service from within your code. The example of how to call a 
 
 <button name="button">Click me</button>
 
-[Click me](http://www.google.com){: .btn}
+[Click me](http://www.filesmuggler.github.io){: .btn}
 
-[button url="http://www.google.com"]
+[button url="http://www.filesmuggler.github.io"]
 
-{% include button.html url="http://www.google.com" %}
+{% include button.html url="http://www.filesmuggler.github.io" %}
