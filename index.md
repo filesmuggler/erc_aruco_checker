@@ -16,3 +16,4 @@ Launch file `erc_aruco_checker.launch` starts `erc_aruco_checker.py` node. It ta
 
 You should call the service from within your code. The example of how to call a custom service with Python is pictured in the node `example_call.py` in the `erc_aruco_checker` package. The difference between real and simulated environments lies in the ground truth of the aruco tags placed in the simulation versus the tags in real life. 
 
+<button name="button">Click me</button>
