@@ -38,12 +38,11 @@ class ExampleCall:
         try:
             # create service proxy with service name and message type
             service_proxy = rospy.ServiceProxy('erc_aruco_score',ErcAruco)
-            # create object of the request type for the Service (15 tags)
+            # create object of the request type for the Service (14 tags)
             service_msg = ErcArucoRequest()
 
             # WARNING!################################################################
             #TODO: Below you should specify the tag positions with respect to the base
-            service_msg.tag0=[0,0,0]
             service_msg.tag1=[0,0,0]
             service_msg.tag2=[0,0,0]
             service_msg.tag3=[0,0,0]
