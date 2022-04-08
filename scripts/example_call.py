@@ -41,8 +41,8 @@ class ExampleCall:
             # create object of the request type for the Service (14 tags)
             service_msg = ErcArucoRequest()
 
-            # WARNING!################################################################
-            #TODO: Below you should specify the tag positions with respect to the base
+            # WARNING!#######################################################################
+            #TODO: Below you should specify the tag positions with respect to the /base frame
             service_msg.tag1=[0,0,0]
             service_msg.tag2=[0,0,0]
             service_msg.tag3=[0,0,0]
@@ -57,7 +57,7 @@ class ExampleCall:
             service_msg.tag12=[0,0,0]
             service_msg.tag13=[0,0,0]
             service_msg.tag14=[0,0,0]
-            ###########################################################################
+            ##################################################################################
 
             # call the service with your message through service proxy
             # and receive the response, which happens to be your score
